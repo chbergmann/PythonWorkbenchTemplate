@@ -25,6 +25,7 @@ When you restart FreeCAD, "Python Workbench Template" workbench should now show 
 - Edit InitGui.py. Delete Feature1 and add your new feature instead. Edit the \__title\__, \__author\__, \__url\__ and \__version\__ tags.
 - Write your new feature and test it well.
 - Write a documentation in README.md. Explain the purpose of your workbench. Explain your features. Screenshots are great.
+- Draw a .svg icon for the workbench and for each feature. You can export FreeCAD designs to .svg.
 - Announce your workbench in the [FreeCAD forum](https://forum.freecadweb.org/index.php). Add the link of your new thread in README.md
 - Add your workbench to the [Addon manager](https://github.com/FreeCAD/FreeCAD-addons)
 

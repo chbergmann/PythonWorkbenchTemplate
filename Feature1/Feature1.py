@@ -5,13 +5,12 @@ __author__ = "Christian Bergmann"
 __license__ = "LGPL 2.1"
 __doc__ = "An example for a workbench feature"
 
-import PythonWorkbenchTemplate
 import os
 import FreeCADGui
 import FreeCAD
-from FreeCAD import Vector
-import Part
 
+__dir__ = os.path.dirname(__file__)
+__iconpath__ = os.path.join(__dir__, 'feature1.svg')
     
 class Feature1Worker:
     def __init__(self, 
@@ -44,7 +43,7 @@ class Feature1ViewProvider:
             
     def getIcon(self):
         '''Return the icon which will appear in the tree view. This method is optional and if not defined a default icon is shown.'''
-        return (os.path.join(PythonWorkbenchTemplate.get_module_path(), "Resources", "icons", "feature1.svg"))
+        return __iconpath__
 
     def attach(self, vobj):
         '''Setup the scene sub-graph of the view provider, this method is mandatory'''
@@ -67,18 +66,64 @@ class Feature1ViewProvider:
         '''Here we can do something when a single property got changed'''
         pass
         
+    def setEdit(self, vobj=None, mode=0):
+        '''Enter edit mode when double clicking onto the feature. Optional.'''
+        # Create a task panel UI
+        self.panel = Feature1TaskPanel(self.Object)
+        FreeCADGui.Control.showDialog(self.panel)
+        return True
+        
     def __getstate__(self):
         '''When saving the document this object gets stored using Python's json module.\
                 Since we have some un-serializable parts here -- the Coin stuff -- we must define this method\
                 to return a tuple of all serializable objects or None.'''
         return None
  
-    def __setstate__(self,state):
+    def __setstate__(self, state):
         '''When restoring the serialized object from document we have the chance to set some internals here.\
                 Since no data were serialized nothing needs to be done here.'''
         return None
+    
         
+class Feature1TaskPanel:
+    def __init__(self, fp):
+        self.fp = fp
+        # this will create a Qt widget from our ui file
+        self.form = FreeCADGui.PySideUic.loadUi(os.path.join(__dir__, 'feature1.ui'))
+        # connect controls from the .ui file to class methods
+        self.form.pushButtonSelect.pressed.connect(self._selectPart)
+        self.form.radioButtonRed.released.connect(self._changeColor)
+        self.form.radioButtonGreen.released.connect(self._changeColor)
+        if self.fp.Base:
+            self.form.labelSelected.setText(self.fp.Base.Name)
 
+    def accept(self):
+        '''called when the OK button in the task panel is pressed'''
+        self.fp.Base = FreeCAD.ActiveDocument.getObject(self.form.labelSelected.text())
+        self.fp.Green = self.form.radioButtonGreen.isChecked()
+        
+        redrawFeature1(self.fp)
+        FreeCADGui.ActiveDocument.resetEdit()
+        return True
+        
+    def reject(self):
+        '''called when the Cancel button in the task panel is pressed'''
+        FreeCADGui.ActiveDocument.resetEdit()
+        return True
+    
+    def _selectPart(self):
+        '''called when the Select Part button defined in the .ui file is pressed'''
+        selection = FreeCADGui.Selection.getSelectionEx()
+        if len(selection) > 0:
+            self.fp.Base = FreeCAD.ActiveDocument.getObject(selection[0].ObjectName)
+            self.form.labelSelected.setText(selection[0].ObjectName)
+            
+    def _changeColor(self):
+        '''called when a radio button defined in the .ui file is pressed'''
+        self.fp.Green = self.form.radioButtonGreen.isChecked()
+        changeFeature1Color(self.fp)
+        
+       
 def redrawFeature1(fp):
     # check plausibility of all parameters
     if not fp.Base:
@@ -86,10 +131,14 @@ def redrawFeature1(fp):
     
     # fp.Shape contains the newly created object
     fp.Shape = fp.Base.Shape.copy()
+    fp.Placement = fp.Base.Placement
+    # place the new object on top of the selected one
+    fp.Placement.Base.z += fp.Base.Shape.BoundBox.ZLength
+    
     changeFeature1Color(fp)
     
        
-def changeFeature1Color(fp):       
+def changeFeature1Color(fp):   
     if fp.Green:
         fp.ViewObject.ShapeColor = (0.00, 1.00, 0.00)
     else:
@@ -122,9 +171,9 @@ class Feature1():
         
     def GetResources(self):
         '''Return the icon which will appear in the tree view. This method is optional and if not defined a default icon is shown.'''
-        return {'Pixmap'  : os.path.join(PythonWorkbenchTemplate.get_module_path(), "Resources", "icons", "feature1.svg"),
+        return {'Pixmap'  : __iconpath__,
                 'Accel' : "", # a default shortcut (optional)
                 'MenuText': "Feature1",
-                'ToolTip' : "A template for a workbench feature" }
+                'ToolTip' : __doc__ }
 
 FreeCADGui.addCommand('Feature1', Feature1())
