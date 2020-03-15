@@ -42,7 +42,7 @@ Creates a copy of a selected object and sets it on top of the original and color
 
 
 ## Discussion
-Please offer feedback or connect with the developer via the [dedicated FreeCAD forum thread](LINK).
+Please offer feedback or connect with the developer via the [dedicated FreeCAD forum thread](https://forum.freecadweb.org/viewtopic.php?f=22&t=44197).
 
 ## License
 GNU Lesser General Public License v3.0
