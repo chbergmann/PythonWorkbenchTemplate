@@ -1,5 +1,7 @@
 # Python Workbench Template
-   
+
+![WorkbenchIcon](./freecad.svg)  
+    
 A template for creating a new FreeCAD workbench in Python.  
 FreeCAD offers great opportunities to create scripted objects. This should be a starting point to create your own workbench.
   
@@ -24,14 +26,15 @@ When you restart FreeCAD, "Python Workbench Template" workbench should now show 
 - Rename Feature1.py with YourNewFeature.py 
 - Edit InitGui.py. Delete Feature1 and add your new feature instead. Edit the \__title\__, \__author\__, \__url\__ and \__version\__ tags.
 - Write your new feature and test it well.
-- Write a documentation in README.md. Explain the purpose of your workbench. Explain your features. Screenshots are great.
+- If you need a user interface, create a .ui file with the QT Designer. See Feature1TaskPanel in Feature1.py how to implement it.
+- Write a documentation in README.md. Explain the purpose of your workbench. Explain your features and its parameters. Screenshots are great.
 - Draw a .svg icon for the workbench and for each feature. You can export FreeCAD designs to .svg.
 - Announce your workbench in the [FreeCAD forum](https://forum.freecadweb.org/index.php). Add the link of your new thread in README.md
 - Add your workbench to the [Addon manager](https://github.com/FreeCAD/FreeCAD-addons)
 
 ## Tools
-### ![Feature1Icon](./Resources/icons/feature1.svg) Feature1
-Colorizes a selected object red or green. For demonstration how to write a workbench feature.
+### ![Feature1Icon](./Feature1/feature1.svg) Feature1
+Creates a copy of a selected object and sets it on top of the original and colorizes it red or green. For demonstration how to write a workbench feature.
 
 #### Parameters
 - Base: The object to colorize
